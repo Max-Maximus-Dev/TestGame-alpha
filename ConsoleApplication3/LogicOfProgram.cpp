@@ -6,161 +6,72 @@
 #include <filesystem>
 #include <fstream>
 namespace fs = std::filesystem;
-class categoryOfTests {
-protected:
-	std::string category_name;
-	std::vector<Test*> tests;
-public:
-	categoryOfTests(std::string category_name) {
-		this->category_name = category_name;
-	}
-	std::string getCategoryName() {
-		return category_name;
-	}
-	void addTest(Test* test) {
-		tests.push_back(test);
-	}
-	std::vector<Test*> getTests() {
-		return tests;
-	}
-};
-class Test {
-protected:
-	std::string test_name;
-	std::vector<Question*> questions;
-public:
-	Test(std::string test_name) {
-		this->test_name = test_name;
-	}
-	std::string getTestName() {
-		return test_name;
-	}
-	void addQuestion(Question* question) {
-		questions.push_back(question);
-	}
-	std::vector<Question*> getQuestions() {
-		return questions;
-	}
-};
-class Question {
-protected:
-	std::string question_text;
-	std::vector<Answer*> answers;
-public:
-	Question(std::string question_text) {
-		this->question_text = question_text;
-	}
-	std::string getQuestionText() {
-		return question_text;
-	}
-	void addAnswer(Answer* answer) {
-		answers.push_back(answer);
-	}
-	std::vector<Answer*> getAnswers() {
-		return answers;
-	}
-};
-class Answer {
-protected:
-	std::string answer_text;
-	bool is_correct;
-public:
-	Answer(std::string answer_text, bool is_correct) {
-		this->answer_text = answer_text;
-		this->is_correct = is_correct;
-	}
-	std::string getAnswerText() {
-		return answer_text;
-	}
-	bool getIsCorrect() {
-		return is_correct;
-	}
-};
+int count_of_admins = 0;
+std::vector<User*> users;
+std::vector<categoryOfTests*> categories;
+std::vector<Test*> all_tests;
 
+// ====== Answer ======
+Answer::Answer(std::string answer_text, bool is_correct) {
+	this->answer_text = answer_text;
+	this->is_correct = is_correct;
+}
+std::string Answer::getAnswerText() { return answer_text; }
+bool Answer::getIsCorrect() { return is_correct; }
 
+// ====== Question ======
+Question::Question(std::string question_text) { this->question_text = question_text; }
+std::string Question::getQuestionText() { return question_text; }
+std::vector<Answer*> Question::getAnswers() { return answers; }
+void Question::addAnswer(Answer* answer) { answers.push_back(answer); }
 
+// ====== Test ======
+Test::Test(std::string test_name) { this->test_name = test_name; }
+std::string Test::getTestName() { return test_name; }
+std::vector<Question*> Test::getQuestions() { return questions; }
+void Test::addQuestion(Question* question) { questions.push_back(question); }
 
+// ====== categoryOfTests ======
+categoryOfTests::categoryOfTests(std::string category_name) { this->category_name = category_name; }
+std::string categoryOfTests::getCategoryName() { return category_name; }
+std::vector<Test*> categoryOfTests::getTests() { return tests; }
+void categoryOfTests::addTest(Test* test) { tests.push_back(test); }
 
-class User {
-protected:
-	std::string login, password, role;
-	int count_of_admins = 0; // if >1 - exception
-public:
-	virtual std::string getRole() = 0;
-	virtual ~User() {}
-};
-class Administrator : public User {
-public:
-	Administrator(std::string login, std::string password) {
-		this->login = login;
-		this->password = password;
-		this->role = "Administrator";
-		count_of_admins++;
-		if (count_of_admins > 1) {
-			throw theMaximumNumberOfAdminsIsExceeded();
-			count_of_admins = 1;
-		}
+// ====== Administrator ======
+Administrator::Administrator(std::string login, std::string password) {
+	count_of_admins++;
+	if (count_of_admins > 1) {
+		throw theMaximumNumberOfAdminsIsExceeded();
 	}
-	std::string getRole() override {
-		return role;
-	}
-	std::string getLogin() {
-		return login;
-	}
-	std::string getPassword() {
-		return password;
-	}
-	void setLogin(std::string login) {
-		this->login = login;
-	}
-	void setPassword(std::string password) {
-		this->password = password;
-	}
-	~Administrator() {
-		count_of_admins--;
-	}
-};
-class Guest : public User {
-protected:
-	std::vector<double> grades;
-	int number_of_tests_passed;
-public:
-	Guest(std::string login, std::string password) {
-		this->login = login;
-		this->password = password;
-		this->role = "Guest";
-		this->number_of_tests_passed = 0;
-		this->grades = {};
-	}
-	std::vector<double> getGrades() {
-		return grades;
-	}
-	std::string getRole() override {
-		return role;
-	}
-	int getNumberOfTestsPassed() {
-		return number_of_tests_passed;
-	}
-	void incrementTestsPassed() {
-		number_of_tests_passed++;
-	}
-	std::string getLogin() {
-		return login;
-	}
-	std::string getPassword() {
-		return password;
-	}
-	void setLogin(std::string login) {
-		this->login = login;
-	}
-	void setPassword(std::string password) {
-		this->password = password;
-	}
-};
+	this->login = login;
+	this->password = password;
+	this->role = "Administrator";
+}
+std::string Administrator::getRole() { return role; }
+std::string Administrator::getLogin() { return login; }
+std::string Administrator::getPassword() { return password; }
+void Administrator::setLogin(std::string login) { this->login = login; }
+void Administrator::setPassword(std::string password) { this->password = password; }
 
+// ====== Guest ======
+Guest::Guest(std::string login, std::string password) {
+	this->login = login;
+	this->password = password;
+	this->role = "Guest";
+	this->number_of_tests_passed = 0;
+}
+std::vector<double>& Guest::getGrades() { return grades; }
+std::string Guest::getRole() { return role; }
+int Guest::getNumberOfTestsPassed() { return number_of_tests_passed; }
+void Guest::incrementTestsPassed() { number_of_tests_passed++; }
+std::string Guest::getLogin() { return login; }
+std::string Guest::getPassword() { return password; }
+void Guest::setLogin(std::string login) { this->login = login; }
+void Guest::setPassword(std::string password) { this->password = password; }
+void Guest::addGrade(double g) { grades.push_back(g); }
+void Guest::setNumberOfTestsPassed(int n) { number_of_tests_passed = n; }
 
-
-void passtest(Guest* guest, Test* test) {
+void passTest(Guest* guest, Test* test) {
 	std::cout << "Starting test: " << test->getTestName() << std::endl;
 	double correct_answers = 0;
 	double interest_of_correct_answers = 0;
@@ -259,7 +170,7 @@ void deleteGuestAccount(Administrator* admin, std::vector<User*>& users, std::st
 	}
 	std::cerr << "Guest account not found.\n";
 }
-void manageLoginPasswordGuest(Administrator* admin, std::vector<User*>& users, std::string login, std::string new_login, std::string new_password) {
+void manageLoginPasswordGuest(Administrator* admin, std::vector<User*>& users, std::string login) {
 	std::cout << "What do you want to change?\n1. Login\n2. Password\n";
 	int choice;
 	std::cin >> choice;
@@ -268,10 +179,16 @@ void manageLoginPasswordGuest(Administrator* admin, std::vector<User*>& users, s
 			Guest* guest = dynamic_cast<Guest*>(user);
 			if (guest && guest->getLogin() == login) {
 				if (choice == 1) {
+					std::cout << "Enter new login: ";
+					std::string new_login;
+					std::cin >> new_login;
 					guest->setLogin(new_login);
 					std::cout << "Login changed successfully.\n";
 				}
 				else if (choice == 2) {
+					std::cout << "Enter new password: ";
+					std::string new_password;
+					std::cin >> new_password;
 					guest->setPassword(new_password);
 					std::cout << "Password changed successfully.\n";
 				}
@@ -284,7 +201,8 @@ void manageLoginPasswordGuest(Administrator* admin, std::vector<User*>& users, s
 	}
 }
 
-void showStatistics(Administrator* admin, std::vector<User*>& users, std::vector<categoryOfTests*>& categories, std::vector<Test>& all_tests) {
+void showStatistics(Administrator* admin, std::vector<User*>& users, std::vector<categoryOfTests*>& categories, std::vector<Test*>& all_tests) {
+	fs::current_path("DataBase");
 	std::fstream results_of_tests_by_specific_category("results_of_tests_by_category.txt", std::ios::out);
 	std::fstream results_of_tests_by_specific_test("results_of_tests_by_specific_test.txt", std::ios::out);
 	std::fstream results_of_tests_by_specific_guest("results_of_tests_by_specific_guest.txt", std::ios::out);
@@ -312,7 +230,7 @@ void showStatistics(Administrator* admin, std::vector<User*>& users, std::vector
 		results_of_tests_by_specific_category << std::endl;
 	}
 	for (auto test : all_tests) {
-		results_of_tests_by_specific_test << "Test: " << test.getTestName() << std::endl;
+		results_of_tests_by_specific_test << "Test: " << test->getTestName() << std::endl;
 		for (auto user : users) {
 			if (user->getRole() == "Guest") {
 				Guest* guest = dynamic_cast<Guest*>(user);
@@ -342,7 +260,8 @@ void showStatistics(Administrator* admin, std::vector<User*>& users, std::vector
 	results_of_tests_by_specific_category.close();
 	results_of_tests_by_specific_test.close();
 	results_of_tests_by_specific_guest.close();
-	std::cout << "Statistics generated successfully.\n";
+	fs::current_path("..");
+	std::cout << "Statistics generated successfully. Open folder DataBase!\n";
 }
 void addCategoryOfTests(Administrator* admin, std::vector<categoryOfTests*>& categories, std::string category_name) {
 	categoryOfTests* category = new categoryOfTests(category_name);
@@ -377,27 +296,42 @@ void deleteTest(Administrator* admin, categoryOfTests* category, std::string tes
 	}
 	std::cerr << "Test not found in category " << category->getCategoryName() << ".\n";
 }
-void addQuestionToTest(Administrator* admin, Test* test, std::string question_text) {
-	Question* question = new Question(question_text);
-	test->addQuestion(question);
-	std::cout << "Question added successfully to test " << test->getTestName() << ".\n";
-}
-void deleteQuestionFromTest(Administrator* admin, Test* test, std::string question_text) {
-	auto questions = test->getQuestions();
-	for (auto it = questions.begin(); it != questions.end(); it++) {
-		if ((*it)->getQuestionText() == question_text) {
-			delete* it;
-			questions.erase(it);
-			std::cout << "Question deleted successfully from test " << test->getTestName() << ".\n";
+void addQuestionToTest(Administrator* admin, Test* test, std::string question_text, categoryOfTests* category, std::vector<Answer> answers) {
+	for (auto c : category->getTests()) {
+		if (c == test) {
+			Question* question = new Question(question_text);
+			for (auto& ans : answers) {
+				Answer* answer = new Answer(ans.getAnswerText(), ans.getIsCorrect());
+				question->addAnswer(answer);
+			}
+			test->addQuestion(question);
+			std::cout << "Question added successfully to test " << test->getTestName() << ".\n";
 			return;
 		}
 	}
-	std::cerr << "Question not found in test " << test->getTestName() << ".\n";
+	std::cerr << "Test not found in the specified category.\n";
+}
+void deleteQuestionFromTest(Administrator* admin, Test* test, std::string question_text, categoryOfTests* category) {
+	for (auto c : category->getTests()) {
+		if (c == test) {
+			auto questions = test->getQuestions();
+			for (auto it = questions.begin(); it != questions.end(); it++) {
+				if ((*it)->getQuestionText() == question_text) {
+					delete* it;
+					questions.erase(it);
+					std::cout << "Question deleted successfully from test " << test->getTestName() << ".\n";
+					return;
+				}
+			}
+			std::cerr << "Question not found in test " << test->getTestName() << ".\n";
+			return;
+		}
+	}
+	std::cerr << "Test not found in the specified category.\n";
 }
 
 
 
-std::vector<User*> users;
 void registerUser(std::string login, std::string password, std::string role) {
 	if (role == "Administrator") {
 		try {
@@ -437,4 +371,160 @@ User* loginUser(std::string login, std::string password) {
 	}
 	std::cerr << "Invalid login or password.\n";
 	return nullptr;
+}
+
+void SerializeData(std::vector<User*>& users, std::vector<categoryOfTests*>& categories) {
+	if (!fs::exists("DataBase\\data.txt")) {
+		std::ofstream ofs("DataBase\data.txt");
+		ofs.close();
+	}
+	fs::current_path("DataBase");
+	std::ofstream ofs("data.txt");
+	if (!ofs.is_open()) {
+		throw dataSerializationError();
+	}
+
+	ofs << users.size() << "\n";
+	for (auto& user : users) {
+		ofs << user->getRole() << "\n";
+
+		if (user->getRole() == "Administrator") {
+			Administrator* admin = dynamic_cast<Administrator*>(user);
+			ofs << admin->getLogin() << "\n";
+			ofs << admin->getPassword() << "\n";
+		}
+		else if (user->getRole() == "Guest") {
+			Guest* guest = dynamic_cast<Guest*>(user);
+			ofs << guest->getLogin() << "\n";
+			ofs << guest->getPassword() << "\n";
+			ofs << guest->getNumberOfTestsPassed() << "\n";
+			ofs << guest->getGrades().size() << "\n";
+			for (auto grade : guest->getGrades()) {
+				ofs << grade << " ";
+			}
+			ofs << "\n";
+		}
+	}
+
+	ofs << categories.size() << "\n";
+	for (auto& category : categories) {
+		ofs << category->getCategoryName() << "\n";
+		ofs << category->getTests().size() << "\n";
+
+		for (auto test : category->getTests()) {
+			ofs << test->getTestName() << "\n";
+			ofs << test->getQuestions().size() << "\n";
+
+			for (auto question : test->getQuestions()) {
+				ofs << question->getQuestionText() << "\n";
+				ofs << question->getAnswers().size() << "\n";
+
+				for (auto answer : question->getAnswers()) {
+					ofs << answer->getAnswerText() << "\n";
+					ofs << (answer->getIsCorrect() ? 1 : 0) << "\n";
+				}
+			}
+		}
+	}
+	ofs.close();
+	fs::current_path("..");
+}
+void DeserializeData(std::vector<User*>& users, std::vector<categoryOfTests*>& categories) {
+	if (!fs::exists("DataBase/data.txt")) {
+		throw dataDeserializationError();
+	}
+	fs::current_path("DataBase");
+	std::ifstream ifs("data.txt");
+	if (!ifs.is_open()) {
+		throw dataDeserializationError();
+	}
+
+	int users_size;
+	ifs >> users_size;
+	ifs.ignore(); 
+
+	for (int i = 0; i < users_size; i++) {
+		std::string role;
+		std::getline(ifs, role);
+
+		if (role == "Administrator") {
+			std::string login, password;
+			std::getline(ifs, login);
+			std::getline(ifs, password);
+			Administrator* admin = new Administrator(login, password);
+			users.push_back(admin);
+		}
+		else if (role == "Guest") {
+			std::string login, password;
+			std::getline(ifs, login);
+			std::getline(ifs, password);
+
+			int number_of_tests_passed;
+			ifs >> number_of_tests_passed;
+			int grades_size;
+			ifs >> grades_size;
+			ifs.ignore();
+
+			Guest* guest = new Guest(login, password);
+			guest->setNumberOfTestsPassed(number_of_tests_passed);
+
+			for (int j = 0; j < grades_size; j++) {
+				double grade;
+				ifs >> grade;
+				guest->addGrade(grade);
+			}
+			ifs.ignore();
+			users.push_back(guest);
+		}
+	}
+
+	int categories_size;
+	ifs >> categories_size;
+	ifs.ignore();
+
+	for (int i = 0; i < categories_size; i++) {
+		std::string category_name;
+		std::getline(ifs, category_name);
+		categoryOfTests* category = new categoryOfTests(category_name);
+		categories.push_back(category);
+
+		int tests_size;
+		ifs >> tests_size;
+		ifs.ignore();
+
+		for (int j = 0; j < tests_size; j++) {
+			std::string test_name;
+			std::getline(ifs, test_name);
+			Test* test = new Test(test_name);
+			category->addTest(test);
+
+			int questions_size;
+			ifs >> questions_size;
+			ifs.ignore();
+
+			for (int k = 0; k < questions_size; k++) {
+				std::string question_text;
+				std::getline(ifs, question_text);
+				Question* question = new Question(question_text);
+				test->addQuestion(question);
+
+				int answers_size;
+				ifs >> answers_size;
+				ifs.ignore();
+
+				for (int l = 0; l < answers_size; l++) {
+					std::string answer_text;
+					std::getline(ifs, answer_text);
+					int is_correct_int;
+					ifs >> is_correct_int;
+					ifs.ignore();
+					bool is_correct = (is_correct_int == 1);
+					Answer* answer = new Answer(answer_text, is_correct);
+					question->addAnswer(answer);
+				}
+			}
+		}
+	}
+	ifs.close();
+	fs::current_path("..");
 }
