@@ -1,7 +1,6 @@
 #pragma once
 #include <iostream>
 #include <exception>
-
 class theMaximumNumberOfAdminsIsExceeded : public std::exception {
 public:
 	const char* what() const noexcept override {
@@ -78,6 +77,12 @@ class questionAlreadyExists : public std::exception {
 public:
 	const char* what() const noexcept override {
 		return "Question already exists.";
+	}
+};
+class answerAlreadyExists : public std::exception {
+	public:
+	const char* what() const noexcept override {
+		return "Answer already exists.";
 	}
 };
 

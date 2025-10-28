@@ -105,8 +105,8 @@ void manageLoginPasswordGuest(Administrator* admin, std::vector<User*>& users, s
 void showStatistics(Administrator* admin, std::vector<User*>& users, std::vector<categoryOfTests*>& categories, std::vector<Test*>& all_tests);
 void addCategoryOfTests(Administrator* admin, std::vector<categoryOfTests*>& categories, std::string category_name);
 void deleteCategoryOfTests(Administrator* admin, std::vector<categoryOfTests*>& categories, std::string category_name);
-void addTest(Administrator* admin, categoryOfTests* category, std::string test_name);
-void deleteTest(Administrator* admin, categoryOfTests* category, std::string test_name);
+void addTest(Administrator* admin, categoryOfTests* category, std::string test_name, std::vector<Test*>& all_tests);
+void deleteTest(Administrator* admin, categoryOfTests* category, std::string test_name, std::vector<Test*>& all_tests);
 void addQuestionToTest(Administrator* admin, Test* test, std::string question_text, categoryOfTests* category, std::vector<Answer> answers);
 void deleteQuestionFromTest(Administrator* admin, Test* test, std::string question_text, categoryOfTests* category);
 

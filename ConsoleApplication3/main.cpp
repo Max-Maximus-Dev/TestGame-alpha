@@ -66,6 +66,8 @@ namespace Menu {
 			}
 			default: {
 				std::cerr << "Invalid choice.\n";
+				std::cin.clear();
+				std::cin.ignore();
 				break;
 			}
 			}
@@ -140,7 +142,7 @@ namespace Menu {
 				}
 				std::cout << "Enter test name: ";
 				std::cin >> test_name;
-				addTest(admin, category, test_name);
+				addTest(admin, category, test_name, all_tests);
 				SerializeData(users, categories);
 				break;
 			}
@@ -161,7 +163,7 @@ namespace Menu {
 				}
 				std::cout << "Enter test name to delete: ";
 				std::cin >> test_name;
-				deleteTest(admin, category, test_name);
+				deleteTest(admin, category, test_name, all_tests);
 				SerializeData(users, categories);
 				break;
 			}
@@ -264,6 +266,8 @@ namespace Menu {
 			}
 			default: {
 				std::cerr << "Invalid choice.\n";
+				std::cin.clear();
+				std::cin.ignore();
 				break;
 			}
 			}

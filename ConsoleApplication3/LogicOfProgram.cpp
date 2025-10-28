@@ -279,17 +279,24 @@ void deleteCategoryOfTests(Administrator* admin, std::vector<categoryOfTests*>& 
 	}
 	std::cerr << "Category of tests not found.\n";
 }
-void addTest(Administrator* admin, categoryOfTests* category, std::string test_name) {
+void addTest(Administrator* admin, categoryOfTests* category, std::string test_name, std::vector<Test*>& all_tests) {
 	Test* test = new Test(test_name);
 	category->addTest(test);
+	all_tests.push_back(test);
 	std::cout << "Test added successfully to category " << category->getCategoryName() << ".\n";
 }
-void deleteTest(Administrator* admin, categoryOfTests* category, std::string test_name) {
+void deleteTest(Administrator* admin, categoryOfTests* category, std::string test_name, std::vector<Test*>& all_tests) {
 	auto tests = category->getTests();
 	for (auto it = tests.begin(); it != tests.end(); it++) {
 		if ((*it)->getTestName() == test_name) {
 			delete* it;
 			tests.erase(it);
+			for (auto ait = all_tests.begin(); ait != all_tests.end(); ait++) {
+				if ((*ait)->getTestName() == test_name) {
+					all_tests.erase(ait);
+					break;
+				}
+			}
 			std::cout << "Test deleted successfully from category " << category->getCategoryName() << ".\n";
 			return;
 		}
